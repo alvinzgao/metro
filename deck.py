@@ -23,13 +23,21 @@ class Suit(Enum):
     diamonds = auto()
     hearts = auto()
     spades = auto()
+    
+    
+class Color(Enum):
+    """
+    Enum containing all possible card colors
+    """
+    red = auto()
+    black = auto()
 
 
-SUIT_TO_COLOR: Dict[Suit, str] = {
-    Suit.clubs: 'b',
-    Suit.diamonds: 'r',
-    Suit.hearts: 'r',
-    Suit.spades: 'b',
+SUIT_TO_COLOR: Dict[Suit, Color] = {
+    Suit.clubs: Color.black,
+    Suit.diamonds: Color.red,
+    Suit.hearts: Color.red,
+    Suit.spades: Color.black,
 }
 assert len(SUIT_TO_COLOR) == len(Suit)
 
@@ -38,11 +46,11 @@ class Card(NamedTuple):
     """
     Class representing a playing card
     """
-    suit: Suit
     value: int
+    suit: Suit
 
     @property
-    def color(self) -> str:
+    def color(self) -> Color:
         return SUIT_TO_COLOR[self.suit]
 
     def __repr__(self) -> str:
@@ -70,8 +78,8 @@ class Deck(object):
         """
         Shuffle all cards back into the deck
         """
-        cards = [Card(suit=suit, value=value)
-                 for suit in Suit for value in range(1, 14)]
+        cards = [Card(value=value, suit=suit)
+                 for value in range(1, 14) for suit in Suit]
         random.shuffle(cards)
         self.cards = cards
 
