@@ -65,10 +65,11 @@ class Deck(object):
     Class representing a deck of playing cards
     """
 
-    def __init__(self, num_cards=52):
+    def __init__(self, num_cards: int = 52, reset_when_empty: bool = True):
         assert num_cards <= 52, 'Deck cannot have > 52 cards'
 
         self.cards: List[Card] = []
+        self.reset_when_empty: bool = reset_when_empty
 
         self.reset_cards()
         if num_cards < 52:
@@ -87,6 +88,11 @@ class Deck(object):
         """
         Draw a random card
         """
+        if not self.cards:
+            if self.reset_when_empty:
+                self.reset_cards()
+            else:
+                assert self.cards, 'Deck is empty'
         return self.cards.pop()
 
     def count(self, attr: str) -> Counter:
