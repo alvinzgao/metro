@@ -23,23 +23,25 @@ class InOutChoices(Enum):
     outside = auto()
 
 
-def red_or_black(next_card: Card, choice: Color) -> bool:
+def red_or_black(next_card: Card, choice: Color, **kwargs) -> bool:
     """
     Player guesses whether the next card will be red or black
     """
+    del kwargs
     return next_card.color == choice
 
 
 def higher_or_lower(next_card: Card,
-                    previous_card: Card,
+                    previous_cards: List[Card],
                     choice: HiLoChoices) -> bool:
     """
     Player guesses whether the next card will be higher or lower than the
     previous card drawn by that player
     """
-    if next_card.value == previous_card.value:
+    previous_value = previous_cards[-1].value
+    if next_card.value == previous_value:
         return False
-    return not ((next_card.value > previous_card.value)
+    return not ((next_card.value > previous_value)
                 ^ (choice == HiLoChoices.higher))
 
 
@@ -58,3 +60,11 @@ def inside_or_outside(next_card: Card,
 
     is_inside = previous_values[0] < next_card.value < previous_values[1]
     return not (is_inside ^ (choice == InOutChoices.inside))
+
+
+def guess_the_suit(next_card: Card, choice: Suit, **kwargs) -> bool:
+    """
+    Player guesses the suit of the next card
+    """
+    del kwargs
+    return next_card.suit == choice

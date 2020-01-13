@@ -25,6 +25,10 @@ class Player(object):
         self.hand.append(card)
         return card
 
+    def choose(self, game_state: GameState, deck: Deck):
+        if game_state.round in {1, 3}:
+            return self.strategies[game_state](self.hand, deck)
+
     def drink(self) -> None:
         self.drinks += 1
 

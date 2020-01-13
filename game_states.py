@@ -2,6 +2,9 @@
 Enum representing all possible game states in Ride the Bus
 """
 from enum import Enum, auto
+from typing import Callable, Optional
+
+from metro import player_choices
 
 
 class GameState(Enum):
@@ -26,3 +29,15 @@ class GameState(Enum):
     @property
     def round(self) -> int:
         return int(self.name[1])
+
+    @property
+    def player_choice(self) -> Optional[Callable]:
+        if 'red_or_black' in self.name:
+            return player_choices.red_or_black
+        elif 'higher_or_lower' in self.name:
+            return player_choices.higher_or_lower
+        elif 'inside_or_outside' in self.name:
+            return player_choices.inside_or_outside
+        elif 'guess_the_suit' in self.name:
+            return player_choices.guess_the_suit
+        return None
