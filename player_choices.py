@@ -38,9 +38,13 @@ def higher_or_lower(next_card: Card,
     Player guesses whether the next card will be higher or lower than the
     previous card drawn by that player
     """
+    assert len(previous_cards) >= 1, (
+        'Must have one previous card to guess higher or lower')
+
     previous_value = previous_cards[-1].value
     if next_card.value == previous_value:
         return False
+
     return not ((next_card.value > previous_value)
                 ^ (choice == HiLoChoices.higher))
 
@@ -54,6 +58,7 @@ def inside_or_outside(next_card: Card,
     """
     assert len(previous_cards) >= 2, (
         'Must have two previous cards to guess inside or outside')
+
     previous_values = sorted(card.value for card in previous_cards[-2:])
     if next_card.value in previous_values:
         return False
