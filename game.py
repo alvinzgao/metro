@@ -84,9 +84,9 @@ class Game(object):
                 print(f'{player} chose {choice.name} and drew '
                       f'{player.hand[-1]}, so they were {descriptor}correct')
             if correct:
-                player.assign_drink()
+                player.assign_drink(self.game_state)
             else:
-                player.drink()
+                player.drink(self.game_state)
         self.advance_game_state()
 
     def _play_round_two(self, verbose: bool = False) -> None:
@@ -114,8 +114,9 @@ class Game(object):
                         formatted_matches = ', '.join(map(str, matched_cards))
                         print(f'{player} matched {formatted_matches} to '
                               f'{next_card}')
-                    for _ in range(len(matched_cards) * (pyramid_row + 1)):
-                        player.assign_drink()
+                    player.assign_drink(
+                        self.game_state,
+                        num_drinks=(len(matched_cards) * (pyramid_row + 1)))
 
         self.bus_rider = max(self.players, key=lambda p: len(p.hand))
         self.reset_cards()
@@ -138,5 +139,5 @@ class Game(object):
         if correct:
             self.advance_game_state()
         else:
-            player.drink()
+            player.drink(self.game_state)
             self.game_state = GameState.r3_red_or_black
