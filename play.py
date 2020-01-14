@@ -85,8 +85,31 @@ class Game(object):
         """
         Play round two and advance the game state
         """
-        # TODO: implement
-        self.bus_rider = self.players[0]
+        for pyramid_row in range(self.num_pyramid_rows):
+            num_cards_in_row = self.num_pyramid_rows - pyramid_row
+            for card_index in range(num_cards_in_row):
+                next_card = self.deck.draw()
+                if verbose:
+                    print(f'Card {card_index + 1}/{num_cards_in_row} in row '
+                          f'{pyramid_row + 1}/{self.num_pyramid_rows} is '
+                          f'{next_card}')
+
+                for player in self.players:
+                    matched_cards = player.match(
+                        flipped_card=next_card, deck=self.deck)
+                    assert all(match.value == next_card.value
+                               for match in matched_cards), (
+                        f'{player} played one or more cards that didn\'t match '
+                        f'{next_card}: {matched_cards}')
+
+                    if verbose and matched_cards:
+                        formatted_matches = ', '.join(map(str, matched_cards))
+                        print(f'{player} matched {formatted_matches} to '
+                              f'{next_card}')
+                    for _ in range(len(matched_cards) * (pyramid_row + 1)):
+                        player.assign_drink()
+
+        self.bus_rider = max(self.players, key=lambda p: len(p.hand))
         self.advance_game_state()
 
     def _play_round_three_turn(self, verbose: bool = False) -> None:

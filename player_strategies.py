@@ -3,7 +3,7 @@ Functions representing possible player strategies in Ride the Bus
 """
 from enum import Enum
 import random
-from typing import Callable, Type, List
+from typing import Callable, Type, List, Set
 
 from metro.deck import Color, Suit, Card, Deck
 from metro.player_choices import HiLoChoices, InOutChoices
@@ -77,8 +77,10 @@ def choose_suit_with_card_counting(deck: Deck, **kwargs) -> Suit:
     return max(counts, key=counts.get)
 
 
-def play_all_matches(flipped_card: Card, hand: List[Card]) -> List[Card]:
+def play_all_matches(flipped_card: Card, hand: List[Card], **kwargs
+                     ) -> Set[Card]:
     """
     Play all cards with the same value as the flipped card
     """
-    return [card for card in hand if card.value == flipped_card.value]
+    del kwargs
+    return {card for card in hand if card.value == flipped_card.value}

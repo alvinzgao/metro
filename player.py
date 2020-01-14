@@ -1,7 +1,8 @@
 """
 Representation of a player in Ride the Bus
 """
-from typing import Any, Callable, Dict, List
+from enum import Enum
+from typing import Any, Callable, Dict, List, Type, Set
 
 from metro.deck import Deck, Card
 from metro.game_states import GameState
@@ -37,11 +38,18 @@ class Player(object):
     def set_strategies(self, strategies: Dict[GameState, Callable]) -> None:
         self.strategies.update(strategies)
 
-    def guess(self, game_state: GameState, deck: Deck):
-        if game_state.round in {1, 3}:
-            guess = self.strategies[game_state](hand=self.hand, deck=deck)
-            self.hand.append(deck.draw())
-            return guess
+    def guess(self, game_state: GameState, deck: Deck) -> Type[Enum]:
+        assert game_state.round in {1, 3}, 'Can only guess during round 1 or 3'
+
+        guess = self.strategies[game_state](hand=self.hand, deck=deck)
+        self.hand.append(deck.draw())
+        return guess
+
+    def match(self, flipped_card: Card, deck: Deck) -> Set[Card]:
+        matched_cards = self.strategies[GameState.r2](
+            flipped_card=flipped_card, hand=self.hand, deck=deck)
+        self.hand = [card for card in self.hand if card not in matched_cards]
+        return matched_cards
 
     def drink(self) -> None:
         self.drinks += 1
