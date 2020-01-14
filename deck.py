@@ -88,12 +88,11 @@ class Deck(object):
         """
         Draw a random card
         """
-        if not self.cards:
-            if self.reset_when_empty:
-                self.reset_cards()
-            else:
-                assert self.cards, 'Deck is empty'
-        return self.cards.pop()
+        assert self.cards, 'Deck is empty'
+        next_card = self.cards.pop()
+        if not self.cards and self.reset_when_empty:
+            self.reset_cards()
+        return next_card
 
     def count(self, attr: str) -> Counter:
         """

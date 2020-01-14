@@ -5,7 +5,24 @@ from typing import Any, Callable, Dict, List
 
 from metro.deck import Deck, Card
 from metro.game_states import GameState
-from metro.player_strategies import DEFAULT_STRATEGIES
+from metro.player_strategies import (choose_color_with_card_counting,
+                                     choose_hi_or_lo_with_card_counting,
+                                     choose_in_or_out_with_card_counting,
+                                     choose_suit_with_card_counting,
+                                     play_all_matches)
+
+
+DEFAULT_STRATEGIES: Dict[GameState, Callable] = {
+    GameState.r1_red_or_black: choose_color_with_card_counting,
+    GameState.r1_higher_or_lower: choose_hi_or_lo_with_card_counting,
+    GameState.r1_inside_or_outside: choose_in_or_out_with_card_counting,
+    GameState.r1_guess_the_suit: choose_suit_with_card_counting,
+    GameState.r2: play_all_matches,
+    GameState.r3_red_or_black: choose_color_with_card_counting,
+    GameState.r3_higher_or_lower: choose_hi_or_lo_with_card_counting,
+    GameState.r3_inside_or_outside: choose_in_or_out_with_card_counting,
+    GameState.r3_guess_the_suit: choose_suit_with_card_counting,
+}
 
 
 class Player(object):
@@ -27,7 +44,8 @@ class Player(object):
 
     def choose(self, game_state: GameState, deck: Deck):
         if game_state.round in {1, 3}:
-            return self.strategies[game_state](self.hand, deck)
+            return self.strategies[game_state](
+                previous_cards=self.hand, deck=deck)
 
     def drink(self) -> None:
         self.drinks += 1
