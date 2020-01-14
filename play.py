@@ -10,11 +10,20 @@ from metro.player import Player
 
 class Game(object):
 
-    def __init__(self, players: List[Player]):
+    def __init__(self, players: List[Player], num_pyramid_rows: int = 4):
+        assert 4 * len(players) + sum(range(num_pyramid_rows + 1)) <= 52, (
+            f'Not enough cards for {len(players)} players and '
+            f'{num_pyramid_rows} pyramid rows')
+
         self.players: List[Player] = players
+        self.num_pyramid_rows = num_pyramid_rows
         self.game_state: GameState = GameState(1)
         self.deck: Deck = Deck()
         self.bus_rider: Player = None
+
+    @classmethod
+    def with_default_players(cls, num_players: int):
+        return cls(players=[Player(index) for index in range(num_players)])
 
     def advance_game_state(self) -> None:
         """
@@ -22,11 +31,14 @@ class Game(object):
         """
         self.game_state = self.game_state.advance()
 
-    def play(self, wait_for_input: bool = False, verbose: bool = False) -> None:
+    def play(self,
+             stop_state: GameState = GameState.finished,
+             wait_for_input: bool = False,
+             verbose: bool = False) -> None:
         """
         Play an entire game to completion
         """
-        while self.game_state != GameState.finished:
+        while self.game_state != stop_state:
             self.play_turn(verbose=verbose)
             if wait_for_input:
                 input()
