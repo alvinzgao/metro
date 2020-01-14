@@ -55,5 +55,6 @@ class Player(object):
 
     def __repr__(self) -> str:
         class_name = self.__class__.__name__
-        formatted_player_name = str(self.name) + ', ' if self.name else ''
+        formatted_player_name = (
+            str(self.name) + ', ' if self.name is not None else '')
         return f'{class_name}({formatted_player_name}{self.drinks} drinks)'
