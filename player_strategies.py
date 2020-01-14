@@ -29,16 +29,16 @@ def choose_color_with_card_counting(deck: Deck, **kwargs) -> Color:
     return max(counts, key=counts.get)
 
 
-def choose_hi_or_lo_with_card_counting(previous_cards: List[Card], deck: Deck
+def choose_hi_or_lo_with_card_counting(hand: List[Card], deck: Deck
                                        ) -> HiLoChoices:
     """
     Choose whether there are more cards in the deck that are higher or lower
     than the previous card
     """
-    assert len(previous_cards) >= 1, (
-        'Must have one previous card to guess higher or lower')
+    assert len(hand) >= 1, (
+        'Must have one card in hand to guess higher or lower')
 
-    previous_value = previous_cards[-1].value
+    previous_value = hand[-1].value
     counts = deck.count('value')
     higher_count = sum(count for value, count in counts.items()
                        if value > previous_value)
@@ -48,16 +48,16 @@ def choose_hi_or_lo_with_card_counting(previous_cards: List[Card], deck: Deck
         HiLoChoices.lower)
 
 
-def choose_in_or_out_with_card_counting(previous_cards: List[Card], deck: Deck
+def choose_in_or_out_with_card_counting(hand: List[Card], deck: Deck
                                         ) -> HiLoChoices:
     """
     Choose whether there are more cards in the deck that are higher or lower
     than the previous card
     """
-    assert len(previous_cards) >= 2, (
-        'Must have two previous cards to guess inside or outside')
+    assert len(hand) >= 2, (
+        'Must have two cards in hand to guess inside or outside')
 
-    previous_values = sorted(card.value for card in previous_cards[-2:])
+    previous_values = sorted(card.value for card in hand[-2:])
     counts = deck.count('value')
     inside_count = sum(count for value, count in counts.items()
                        if previous_values[0] < value < previous_values[1])

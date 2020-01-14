@@ -30,6 +30,9 @@ class Game(object):
             self.play_turn(verbose=verbose)
             if wait_for_input:
                 input()
+        if verbose:
+            print('Game finished. Player results:\n'
+                  + '\n'.join([str(player) for player in self.players]))
 
     def play_turn(self, verbose: bool = False) -> None:
         """
@@ -53,14 +56,13 @@ class Game(object):
         Play a single turn in round one and advance the game state
         """
         for player in self.players:
-            choice = player.choose(self.game_state, self.deck)
-            next_card = player.draw(self.deck)
-            correct = self.game_state.player_choice(
-                next_card=next_card, previous_cards=player.hand, choice=choice)
+            choice = player.guess(self.game_state, self.deck)
+            correct = self.game_state.player_choice(hand=player.hand,
+                                                    choice=choice)
             if verbose:
                 descriptor = '' if correct else 'NOT '
-                print(f'{player} chose {choice.name} and drew {next_card}, '
-                      f'so they were {descriptor}correct')
+                print(f'{player} chose {choice.name} and drew '
+                      f'{player.hand[-1]}, so they were {descriptor}correct')
             if correct:
                 player.assign_drink()
             else:
@@ -80,19 +82,17 @@ class Game(object):
         Play a single turn in round three and advance the game state
         """
         assert self.bus_rider, 'Bus rider not chosen in round two'
+        player = self.bus_rider
 
-        choice = self.bus_rider.choose(self.game_state, self.deck)
-        next_card = self.bus_rider.draw(self.deck)
-        correct = self.game_state.player_choice(
-            next_card=next_card,
-            previous_cards=self.bus_rider.hand,
-            choice=choice)
+        choice = player.guess(self.game_state, self.deck)
+        correct = self.game_state.player_choice(hand=player.hand,
+                                                choice=choice)
         if verbose:
             descriptor = '' if correct else 'NOT '
-            print(f'{self.bus_rider} chose {choice.name} and drew {next_card}, '
-                  f'so they were {descriptor}correct')
+            print(f'{player} chose {choice.name} and drew '
+                  f'{player.hand[-1]}, so they were {descriptor}correct')
         if correct:
             self.advance_game_state()
         else:
-            self.bus_rider.drink()
+            player.drink()
             self.game_state = GameState.r3_red_or_black

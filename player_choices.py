@@ -23,53 +23,44 @@ class InOutChoices(Enum):
     outside = auto()
 
 
-def red_or_black(next_card: Card, choice: Color, **kwargs) -> bool:
+def red_or_black(hand: List[Card], choice: Color) -> bool:
     """
     Player guesses whether the next card will be red or black
     """
-    del kwargs
-    return next_card.color == choice
+    assert len(hand) >= 1, (
+        'Must have one card in hand to evaluate red or black')
+    return hand[-1].color == choice
 
 
-def higher_or_lower(next_card: Card,
-                    previous_cards: List[Card],
-                    choice: HiLoChoices) -> bool:
+def higher_or_lower(hand: List[Card], choice: HiLoChoices) -> bool:
     """
     Player guesses whether the next card will be higher or lower than the
     previous card drawn by that player
     """
-    assert len(previous_cards) >= 1, (
-        'Must have one previous card to guess higher or lower')
-
-    previous_value = previous_cards[-1].value
-    if next_card.value == previous_value:
-        return False
-
-    return not ((next_card.value > previous_value)
-                ^ (choice == HiLoChoices.higher))
+    assert len(hand) >= 2, (
+        'Must have two cards in hand to evaluate higher or lower')
+    return False if hand[-1].value == hand[-2].value else (
+        not (hand[-1].value > hand[-2].value) ^ (choice == HiLoChoices.higher))
 
 
-def inside_or_outside(next_card: Card,
-                      previous_cards: List[Card],
-                      choice: InOutChoices) -> bool:
+def inside_or_outside(hand: List[Card], choice: InOutChoices) -> bool:
     """
     Player guesses whether the next card will be inside or outside the range
     defined by the two previous cards drawn by that player (exclusive)
     """
-    assert len(previous_cards) >= 2, (
-        'Must have two previous cards to guess inside or outside')
+    assert len(hand) >= 3, (
+        'Must have three cards in hand to evaluate inside or outside')
 
-    previous_values = sorted(card.value for card in previous_cards[-2:])
-    if next_card.value in previous_values:
-        return False
-
-    is_inside = previous_values[0] < next_card.value < previous_values[1]
-    return not (is_inside ^ (choice == InOutChoices.inside))
+    previous_values = sorted(card.value for card in hand[-3:-1])
+    is_inside = previous_values[0] < hand[-1].value < previous_values[1]
+    return False if hand[-1].value in previous_values else (
+        not is_inside ^ (choice == InOutChoices.inside))
 
 
-def guess_the_suit(next_card: Card, choice: Suit, **kwargs) -> bool:
+def guess_the_suit(hand: List[Card], choice: Suit) -> bool:
     """
     Player guesses the suit of the next card
     """
-    del kwargs
-    return next_card.suit == choice
+    assert len(hand) >= 1, (
+        'Must have one card in hand to evaluate suit')
+    return hand[-1].suit == choice

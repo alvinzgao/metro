@@ -37,15 +37,11 @@ class Player(object):
     def set_strategies(self, strategies: Dict[GameState, Callable]) -> None:
         self.strategies.update(strategies)
 
-    def draw(self, deck: Deck) -> Card:
-        card = deck.draw()
-        self.hand.append(card)
-        return card
-
-    def choose(self, game_state: GameState, deck: Deck):
+    def guess(self, game_state: GameState, deck: Deck):
         if game_state.round in {1, 3}:
-            return self.strategies[game_state](
-                previous_cards=self.hand, deck=deck)
+            guess = self.strategies[game_state](hand=self.hand, deck=deck)
+            self.hand.append(deck.draw())
+            return guess
 
     def drink(self) -> None:
         self.drinks += 1
