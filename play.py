@@ -22,44 +22,52 @@ class Game(object):
         """
         self.game_state = self.game_state.advance()
 
-    def play(self) -> None:
+    def play(self, wait_for_input: bool = False, verbose: bool = False) -> None:
         """
         Play an entire game to completion
         """
         while self.game_state != GameState.finished:
-            print(self.game_state)
-            self.play_turn()
+            self.play_turn(verbose=verbose)
+            if wait_for_input:
+                input()
 
-    def play_turn(self) -> None:
+    def play_turn(self, verbose: bool = False) -> None:
         """
         Play a single turn and advance the game state
         """
         assert self.game_state != GameState.finished, (
             f'Game is already finished')
 
-        if self.game_state.round == 1:
-            self._play_round_one_turn()
-        elif self.game_state.round == 2:
-            self._play_round_two()
-        elif self.game_state.round == 3:
-            self._play_round_three_turn()
+        if verbose:
+            print(f'Starting turn: {self.game_state.name}')
 
-    def _play_round_one_turn(self) -> None:
+        if self.game_state.round == 1:
+            self._play_round_one_turn(verbose=verbose)
+        elif self.game_state.round == 2:
+            self._play_round_two(verbose=verbose)
+        elif self.game_state.round == 3:
+            self._play_round_three_turn(verbose=verbose)
+
+    def _play_round_one_turn(self, verbose: bool = False) -> None:
         """
         Play a single turn in round one and advance the game state
         """
         for player in self.players:
             choice = player.choose(self.game_state, self.deck)
             next_card = player.draw(self.deck)
-            if self.game_state.player_choice(next_card=next_card,
-                                             previous_cards=player.hand,
-                                             choice=choice):
+            correct = self.game_state.player_choice(
+                next_card=next_card, previous_cards=player.hand, choice=choice)
+            if verbose:
+                descriptor = '' if correct else 'NOT '
+                print(f'{player} chose {choice.name} and drew {next_card}, '
+                      f'so they were {descriptor}correct')
+            if correct:
                 player.assign_drink()
             else:
                 player.drink()
         self.advance_game_state()
 
-    def _play_round_two(self) -> None:
+    def _play_round_two(self, verbose: bool = False) -> None:
         """
         Play round two and advance the game state
         """
@@ -67,7 +75,7 @@ class Game(object):
         self.bus_rider = self.players[0]
         self.advance_game_state()
 
-    def _play_round_three_turn(self) -> None:
+    def _play_round_three_turn(self, verbose: bool = False) -> None:
         """
         Play a single turn in round three and advance the game state
         """
@@ -75,9 +83,15 @@ class Game(object):
 
         choice = self.bus_rider.choose(self.game_state, self.deck)
         next_card = self.bus_rider.draw(self.deck)
-        if self.game_state.player_choice(next_card=next_card,
-                                         previous_cards=self.bus_rider.hand,
-                                         choice=choice):
+        correct = self.game_state.player_choice(
+            next_card=next_card,
+            previous_cards=self.bus_rider.hand,
+            choice=choice)
+        if verbose:
+            descriptor = '' if correct else 'NOT '
+            print(f'{self.bus_rider} chose {choice.name} and drew {next_card}, '
+                  f'so they were {descriptor}correct')
+        if correct:
             self.advance_game_state()
         else:
             self.bus_rider.drink()
