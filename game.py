@@ -1,5 +1,5 @@
 """
-Simulator for Ride the Bus
+Representation of a game of Ride the Bus
 """
 from typing import List
 
