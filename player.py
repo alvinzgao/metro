@@ -38,6 +38,9 @@ class Player(object):
     def set_strategies(self, strategies: Dict[GameState, Callable]) -> None:
         self.strategies.update(strategies)
 
+    def discard_hand(self):
+        self.hand = []
+
     def guess(self, game_state: GameState, deck: Deck) -> Type[Enum]:
         assert game_state.round in {1, 3}, 'Can only guess during round 1 or 3'
 

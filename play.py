@@ -31,6 +31,14 @@ class Game(object):
         """
         self.game_state = self.game_state.advance()
 
+    def reset_cards(self) -> None:
+        """
+        Reset the deck and all players' hands
+        """
+        self.deck.reset_cards()
+        for player in self.players:
+            player.discard_hand()
+
     def play(self,
              stop_state: GameState = GameState.finished,
              wait_for_input: bool = False,
@@ -110,6 +118,7 @@ class Game(object):
                         player.assign_drink()
 
         self.bus_rider = max(self.players, key=lambda p: len(p.hand))
+        self.reset_cards()
         self.advance_game_state()
 
     def _play_round_three_turn(self, verbose: bool = False) -> None:

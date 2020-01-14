@@ -68,12 +68,11 @@ class Deck(object):
     def __init__(self, num_cards: int = 52, reset_when_empty: bool = True):
         assert num_cards <= 52, 'Deck cannot have > 52 cards'
 
-        self.cards: List[Card] = []
+        self.num_cards: int = num_cards
         self.reset_when_empty: bool = reset_when_empty
+        self.cards: List[Card] = []
 
         self.reset_cards()
-        if num_cards < 52:
-            self.cards = self.cards[:num_cards]
 
     def reset_cards(self) -> None:
         """
@@ -82,7 +81,7 @@ class Deck(object):
         cards = [Card(value=value, suit=suit)
                  for value in range(1, 14) for suit in Suit]
         random.shuffle(cards)
-        self.cards = cards
+        self.cards = cards[:self.num_cards]
 
     def draw(self) -> Card:
         """
