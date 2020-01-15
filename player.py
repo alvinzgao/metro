@@ -1,7 +1,7 @@
 """
 Representation of a player in Ride the Bus
 """
-from collections import defaultdict
+from collections import Counter
 from enum import Enum
 from typing import Any, Callable, Dict, List, Type, Set
 
@@ -32,8 +32,8 @@ class Player(object):
     def __init__(self, name: Any = None):
         self.name: Any = name
         self.hand: List[Card] = []
-        self.drinks: Dict[GameState, int] = defaultdict(int)
-        self.assigned_drinks: Dict[GameState, int] = defaultdict(int)
+        self.drinks: Counter[GameState] = Counter()
+        self.assigned_drinks: Counter[GameState] = Counter()
         self.strategies: Dict[GameState, Callable] = DEFAULT_STRATEGIES
 
     def set_strategies(self, strategies: Dict[GameState, Callable]) -> None:
