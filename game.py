@@ -31,6 +31,12 @@ class Game(object):
         """
         self.game_state = self.game_state.advance()
 
+    def reset_game_state(self) -> None:
+        """
+        Reset the game state
+        """
+        self.game_state = GameState(1)
+
     def reset_cards(self) -> None:
         """
         Reset the deck and all players' hands
@@ -38,6 +44,13 @@ class Game(object):
         self.deck.reset_cards()
         for player in self.players:
             player.discard_hand()
+
+    def reset(self) -> None:
+        """
+        Reset everything EXCEPT for players' drinks and assigned drinks
+        """
+        self.reset_cards()
+        self.reset_game_state()
 
     def play(self,
              stop_state: GameState = GameState.finished,
