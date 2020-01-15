@@ -4,6 +4,7 @@ Utility functions for facilitating simulation
 from collections import Counter
 from typing import List
 
+from metro.game import Game
 from metro.game_states import GameState
 from metro.player import Player
 
@@ -51,3 +52,16 @@ def summarize_player_stats(players: List[Player],
         avg_combined = avg_drinks + avg_assigned
         print(f'\t{game_state.name:<20} : {avg_combined:.2f} '
               f'= {avg_drinks:.2f} (dealt) + {avg_assigned:.2f} (assigned)')
+
+
+def play_and_summarize(game: Game, num_games: int) -> None:
+    """
+    Play a number of games and print formatted player stats
+    """
+    assert game.game_state == GameState(1), f'Game state is not {GameState(1)}'
+
+    for _ in range(num_games):
+        game.play()
+        game.reset()
+
+    summarize_player_stats(players=game.players, num_games=num_games)
