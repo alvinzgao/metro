@@ -18,7 +18,6 @@ def summarize_player_stats(players: List[Player],
 
     drinks = sum([p.drinks for p in players], Counter())
     assigned = sum([p.assigned_drinks for p in players], Counter())
-    combined = drinks + assigned
 
     drinks_total = sum(drinks.values())
     assigned_total = sum(assigned.values())
